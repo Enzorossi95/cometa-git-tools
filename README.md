@@ -1,12 +1,13 @@
 # Cometa Git Tools
 
-Una colección de herramientas Git para mejorar el flujo de trabajo de desarrollo, incluyendo un generador de mensajes de commit basado en AI y un generador de resúmenes de PR.
+Una colección de herramientas Git para mejorar el flujo de trabajo de desarrollo, incluyendo un generador de mensajes de commit basado en AI y un generador/creador de Pull Requests.
 
 ## Características
 
 - 🤖 **AI Conventional Commits**: Genera mensajes de commit siguiendo la convención de Conventional Commits usando Google Gemini AI
-- 📝 **PR Summary Generator**: Genera resúmenes de Pull Requests automáticamente
+- 📝 **PR Manager**: Genera y crea Pull Requests automáticamente con resúmenes inteligentes
 - 🎨 **Interfaz Amigable**: Interfaz de línea de comandos intuitiva y colorida
+- 🔧 **Fácil Configuración**: Comando `cz-setup` para configurar todo automáticamente
 
 ## Instalación
 
@@ -36,6 +37,24 @@ export GEMINI_API_KEY='your-api-key'
 echo 'export GEMINI_API_KEY="your-api-key"' >> ~/.zshrc  # o ~/.bashrc
 ```
 
+3. Configura Commitizen para usar el plugin AI:
+```bash
+# Configuración rápida (recomendado)
+cz-setup
+
+# Opciones avanzadas:
+cz-setup --help         # Ver todas las opciones disponibles
+cz-setup --no-global   # Solo configurar el proyecto actual
+cz-setup --no-project  # Solo configurar globalmente
+```
+
+### Archivos de Configuración
+
+El comando `cz-setup` creará/modificará dos archivos:
+
+1. **~/.commitizen/config.toml**: Configuración global de commitizen
+2. **./pyproject.toml**: Configuración local del proyecto
+
 ## Uso
 
 ### Commitizen AI
@@ -52,30 +71,27 @@ cz commit
 
 ### PR Summary Generator
 
-Genera resúmenes de Pull Requests:
+Herramienta completa para gestionar Pull Requests:
 
 ```bash
-# Genera un resumen del PR actual
+# Genera un resumen del PR actual para poder visualizarlo en el editor de texto
 pr-summary generate
+
+# Crea un nuevo PR con resumen automático
+pr-summary create
+
+# Crea un PR especificando la rama base
+pr-summary create --base main
 
 # Ver todas las opciones disponibles
 pr-summary --help
 ```
 
-## Desarrollo
-
-Para contribuir al proyecto:
-
-1. Clona el repositorio
-2. Instala las dependencias de desarrollo:
-```bash
-pip install -e ".[dev]"
-```
-
-3. Ejecuta los tests:
-```bash
-pytest
-```
+La herramienta permite:
+- 📝 Generar resúmenes detallados de los cambios
+- ✨ Crear PRs directamente desde la línea de comandos
+- 🔄 Especificar la rama base del PR
+- 🤖 Generar títulos y descripciones usando AI
 
 ## Licencia
 

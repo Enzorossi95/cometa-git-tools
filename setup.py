@@ -3,7 +3,18 @@ Cometa Git Tools - A collection of Git utilities for Commitizen and PR Summary G
 """
 
 import os
+import re
 from setuptools import setup, find_packages
+
+def get_version():
+    """Read version from version.py without importing the module."""
+    version_file = os.path.join('src', 'cz_ai_conventional', 'version.py')
+    with open(version_file, 'r', encoding='utf-8') as f:
+        contents = f.read()
+    version_match = re.search(r'VERSION\s*=\s*["\']([^"\']+)["\']', contents)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError('Unable to find version string.')
 
 # Read the contents of README file
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding='utf-8') as f:
@@ -26,7 +37,7 @@ def read_requirements(filename='requirements.txt'):
 
 setup(
     name='cometa-git-tools',
-    version='0.1.3',
+    version=get_version(),
     description='Git tools for Commitizen and PR Summary Generation using AI',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -44,7 +55,7 @@ setup(
         'console_scripts': [
             'pr-summary=pr_summary.cli:main',
             'cometa-git=pr_summary.cli:app',
-            'cz-setup=cz_ai_conventional:setup_global_config',
+            'cz-setup=cz_ai_conventional.cli:main',
         ],
     },
     options={
