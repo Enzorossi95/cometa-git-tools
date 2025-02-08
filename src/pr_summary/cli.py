@@ -36,6 +36,11 @@ def show_command_panel(command: str):
 
 def process_summary(api_key: str, output_file: str, base_branch: str, jira_number: Optional[str] = None) -> Tuple[str, str]:
     """Process and save the summary, return the summary and PR command"""
+    # Eliminar el archivo si existe
+    if os.path.exists(output_file):
+        print(f'[yellow]ℹ Removing existing {output_file}[/yellow]')
+        os.remove(output_file)
+
     diff = get_branch_changes(base_branch)
     if not diff.strip():
         print('[bold yellow]Warning: No changes found in branch to generate summary[/bold yellow]')

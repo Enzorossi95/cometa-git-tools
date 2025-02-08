@@ -21,35 +21,34 @@ def generate_pr_summary(diff: str, api_key: str, jira_number: Optional[str] = No
     )
 
     prompt = f"""
-    Analiza los siguientes cambios de git y genera un resumen detallado del Pull Request.
+    Actúa como un experto desarrollador revisando cambios de código. Analiza los siguientes cambios de git y genera un resumen técnico y preciso del Pull Request.
     
     Reglas importantes:
-    1. El resumen debe estar en español
-    2. Debe incluir TODOS los cambios significativos
-    3. Cada cambio debe explicar QUÉ se cambió y PARA QUÉ
-    4. Incluir modificaciones de código, no solo nombres de archivos
-    5. Mencionar refactorizaciones, nuevas funcionalidades o cambios en la lógica
-    6. Usar viñetas con el símbolo • (no guiones -)
-    7. Ser específico y técnico en la descripción
+    1. SOLO incluir cambios que realmente estén en el diff proporcionado
+    2. Ser específico sobre qué archivos y funciones se modificaron
+    3. Explicar el propósito técnico de cada cambio
+    4. Mencionar cambios en la estructura del código, refactorizaciones o nuevas funcionalidades
+    5. NO inventar cambios que no estén en el diff
+    6. Usar lenguaje técnico y preciso
+    7. Mantener el resumen conciso pero informativo
     
-    El formato DEBE ser exactamente:
+    El formato DEBE ser:
     
     ## Cambios realizados
     
-    • [Primer cambio significativo con explicación del qué y para qué]
-    • [Segundo cambio significativo con explicación del qué y para qué]
-    • [Y así sucesivamente para cada cambio importante]
+    • [Archivo/Componente]: [Descripción técnica del cambio y su propósito]
+    • [Siguiente cambio significativo...]
     
     ## Ticket
     
     {ticket_section}
     
-    Aquí están los cambios a resumir:
+    Cambios a analizar:
     {diff}
     """
 
     generation_config = {
-        'temperature': 0.7,
+        'temperature': 0.3,  # Reducido para mayor precisión
         'top_p': 0.8,
         'top_k': 40,
         'max_output_tokens': 2048,

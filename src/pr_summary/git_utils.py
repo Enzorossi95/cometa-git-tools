@@ -27,10 +27,15 @@ def get_branch_changes(base_branch: str = 'master') -> str:
         base_branch (str): The base branch to compare against (e.g., 'main', 'master', 'develop')
     """
     branch = get_branch_name()
+    print(f'[blue]📊 Analyzing changes between {branch} and {base_branch}...[/blue]')
 
     base = subprocess.run(['git', 'merge-base', base_branch, branch], capture_output=True, text=True)
     if base.returncode != 0:
         print(f'[bold red]Error: Could not find common ancestor with {base_branch}[/bold red]')
+        print('[yellow]Tips:[/yellow]')
+        print(f'  • Ensure branch {base_branch} exists and is up to date')
+        print(f'  • Try running: git fetch origin {base_branch}')
+        print('  • Check if you have the correct base branch name')
         raise typer.Exit(1)
 
     result = subprocess.run(
@@ -45,10 +50,12 @@ def get_branch_changes(base_branch: str = 'master') -> str:
         capture_output=True,
         text=True,
     )
-
     files = subprocess.run(
         ['git', 'diff', '--name-status', base.stdout.strip() + '..HEAD'], capture_output=True, text=True
     )
+
+    print(f'[green]✓ Found {len(files.stdout.splitlines())} changed files[/green]')
+    print(f'[green]✓ Found {len(commits.stdout.splitlines())} commits[/green]')
 
     full_changes = f"""
                 Branch Information:
