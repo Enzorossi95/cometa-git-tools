@@ -14,10 +14,10 @@ app = typer.Typer()
 console = Console()
 
 
-def create_pr_command(output_file: str) -> str:
+def create_pr_command(output_file: str, base_branch: str) -> str:
     """Generate the GitHub CLI command for creating a PR"""
     return (
-        f'gh pr create --title "feat: $(git branch --show-current)" --body-file {output_file} --base master'
+        f'gh pr create --title "feat: $(git branch --show-current)" --body-file {output_file} --base {base_branch}'
     )
 
 
@@ -34,9 +34,9 @@ def show_command_panel(command: str):
     print('\n')
 
 
-def process_summary(api_key: str, output_file: str, jira_number: Optional[str] = None) -> Tuple[str, str]:
+def process_summary(api_key: str, output_file: str, base_branch: str, jira_number: Optional[str] = None) -> Tuple[str, str]:
     """Process and save the summary, return the summary and PR command"""
-    diff = get_branch_changes()
+    diff = get_branch_changes(base_branch)
     if not diff.strip():
         print('[bold yellow]Warning: No changes found in branch to generate summary[/bold yellow]')
         raise typer.Exit(1)
@@ -48,7 +48,7 @@ def process_summary(api_key: str, output_file: str, jira_number: Optional[str] =
             f.write(summary)
 
         print(f'\n[bold green]✨ Summary generated and saved to {output_file}[/bold green]')
-        return summary, create_pr_command(output_file)
+        return summary, create_pr_command(output_file, base_branch)
 
     except Exception as e:
         print(f'[bold red]Error generating summary: {str(e)}[/bold red]')
@@ -59,6 +59,7 @@ def process_summary(api_key: str, output_file: str, jira_number: Optional[str] =
 def generate_summary_command(
     output_file: str = 'pr_summary.md',
     api_key: Optional[str] = None,
+    base_branch: str = typer.Option('master', '--base', '-b', help='Base branch to compare against (e.g., main, master, develop)'),
     jira_number: Optional[str] = typer.Option(
         None, '--jira', '-j', help='JIRA ticket number (e.g., SIS-290)'
     ),
@@ -73,7 +74,7 @@ def generate_summary_command(
             raise typer.Exit(1)
 
     try:
-        _, command = process_summary(api_key, output_file, jira_number)
+        _, command = process_summary(api_key, output_file, base_branch, jira_number)
         show_command_panel(command)
 
     except Exception as e:
@@ -85,6 +86,7 @@ def generate_summary_command(
 def generate_and_create_pr_command(
     output_file: str = 'pr_summary.md',
     api_key: Optional[str] = None,
+    base_branch: str = typer.Option('master', '--base', '-b', help='Base branch to compare against (e.g., main, master, develop)'),
     jira_number: Optional[str] = typer.Option(
         None, '--jira', '-j', help='JIRA ticket number (e.g., SIS-290)'
     ),
@@ -99,7 +101,7 @@ def generate_and_create_pr_command(
             raise typer.Exit(1)
 
     try:
-        _, command = process_summary(api_key, output_file, jira_number)
+        _, command = process_summary(api_key, output_file, base_branch, jira_number)
 
         print('[bold blue]Creating PR...[/bold blue]')
         result = subprocess.run(command, shell=True, capture_output=True, text=True)

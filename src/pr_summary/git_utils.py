@@ -20,13 +20,17 @@ def extract_ticket_from_branch(branch_name: str) -> Optional[str]:
     return match.group(1) if match else None
 
 
-def get_branch_changes() -> str:
-    """Get all changes that will be included in the PR (difference between current branch and master)"""
+def get_branch_changes(base_branch: str = 'master') -> str:
+    """Get all changes that will be included in the PR
+    
+    Args:
+        base_branch (str): The base branch to compare against (e.g., 'main', 'master', 'develop')
+    """
     branch = get_branch_name()
 
-    base = subprocess.run(['git', 'merge-base', 'master', branch], capture_output=True, text=True)
+    base = subprocess.run(['git', 'merge-base', base_branch, branch], capture_output=True, text=True)
     if base.returncode != 0:
-        print('[bold red]Error: Could not find common ancestor with master[/bold red]')
+        print(f'[bold red]Error: Could not find common ancestor with {base_branch}[/bold red]')
         raise typer.Exit(1)
 
     result = subprocess.run(
@@ -49,6 +53,7 @@ def get_branch_changes() -> str:
     full_changes = f"""
                 Branch Information:
                 - Current branch: {branch}
+                - Target branch: {base_branch}
                 - Changes from: {base.stdout.strip()}
 
                 Commits in this PR:
