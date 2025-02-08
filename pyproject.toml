@@ -1,0 +1,7 @@
+[tool.commitizen]
+name = "cz_ai_conventional"
+version = "0.1.3"
+tag_format = "v$version"
+
+[tool]
+name = "cz_ai_conventional" 
